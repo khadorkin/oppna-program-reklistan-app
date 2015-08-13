@@ -7,6 +7,7 @@ import customUi from './../shared/modules/ui';
 import ActionBar from './../shared/viewmodel/ActionBar';
 import navigation from './../shared/utils/navigation';
 import {android, ios} from 'application';
+import {Observable} from 'data/observable';
 
 const webViewModule = require('ui/web-view');
 //const frameModule = require('ui/frame');
@@ -16,46 +17,35 @@ let actionBar;
 let curPageName;
 let wv;
 let navContext;
+let wvContext = new Observable({});
 
 function navigatingTo(args) {
 	customUi.setViewDefaults();
 	page = args.object;
 	navContext = page.navigationContext;
-	curPageName = navContext.data.title;
-
-
-	let enabledTabs = '';
-	if (navContext.data.hasType(0) && navContext.data.hasType(1)) {
-		enabledTabs = 'both';
-	} else if (navContext.data.hasType(0)) {
-		enabledTabs = 'drugs';
-	} else if (navContext.data.hasType(1)) {
-		enabledTabs = 'advice';
-	}
-	actionBar = new ActionBar(curPageName, navContext.prevPageTitle, navContext.selectedIndex, enabledTabs);
-	let elActionBar = page.getViewById('actionbar');
-	elActionBar.bindingContext = actionBar;
-
-
-	// UIView *view1 = [[UIView alloc] init];
-	// var view1 = UIView.alloc().init();
-
-
-	//NSURL *url=[[NSBundle mainBundle] bundleURL];
-	//[webView loadHTMLString:string baseURL:url];
-
-	//NSUrl url = NSBundle.mainBundle().bundleURL();
-	//webView.loadHTMLStringWithBaseURL(String, url);
-
-	//	var baseUrl = UIView.alloc().init();
+	//curPageName = navContext.data.title;
+	//
+	//
+	//let enabledTabs = '';
+	//if (navContext.data.hasType(0) && navContext.data.hasType(1)) {
+	//	enabledTabs = 'both';
+	//} else if (navContext.data.hasType(0)) {
+	//	enabledTabs = 'drugs';
+	//} else if (navContext.data.hasType(1)) {
+	//	enabledTabs = 'advice';
+	//}
+	//actionBar = new ActionBar(curPageName, navContext.prevPageTitle, navContext.selectedIndex, enabledTabs);
+	//let elActionBar = page.getViewById('actionbar');
+	//elActionBar.bindingContext = actionBar;
 
 
 	wv = page.getViewById('detailsWV');
-	wv.off(webViewModule.WebView.loadStartedEvent);
-	wv.on(webViewModule.WebView.loadStartedEvent, function(event) {
-		interjectLink(event);
-	});
-
+	wv.bindingContext = wvContext;
+	//wv.off(webViewModule.WebView.loadStartedEvent);
+	//wv.on(webViewModule.WebView.loadStartedEvent, function(event) {
+	//	interjectLink(event);
+	//});
+	//
 	showVW(navContext.data.getContent(navContext.selectedIndex));
 
 	inspect('Navigating to: ' + navContext.data.id);
@@ -108,20 +98,25 @@ function interjectLink(event) {
 }
 
 function showVW(htmlContent) {
-	wv.src = `<!DOCTYPE html>
-		<html lang="en">
-		<head>
-			<meta charset="utf-8">
-			<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, user-scalable=0;" />
-			<title>REKListan</title>
-			<style>
-			${templatesModel.getCss('custom')}
-			</style>
-		</head>
-		<body style="background-color: #ffffff;">
-			${htmlContent}
-		</body>
-		</html>`;
+
+	const html = 'hi<br>by';
+
+	//const html = `<!DOCTYPE html>
+	//	<html lang="en">
+	//	<head>
+	//		<meta charset="utf-8">
+	//		<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, user-scalable=0;" />
+	//		<title>REKListan</title>
+	//		<style>
+	//		${templatesModel.getCss('custom')}
+	//		</style>
+	//	</head>
+	//	<body style="background-color: #ffffff;">
+	//		${htmlContent}
+	//	</body>
+	//	</html>`;
+
+	wvContext.set('html', html);
 }
 
 

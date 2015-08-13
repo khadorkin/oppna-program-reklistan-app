@@ -20,6 +20,8 @@ var _sharedUtilsNavigation2 = _interopRequireDefault(_sharedUtilsNavigation);
 
 var _application = require('application');
 
+var _dataObservable = require('data/observable');
+
 var webViewModule = require('ui/web-view');
 //const frameModule = require('ui/frame');
 
@@ -28,42 +30,34 @@ var actionBar = undefined;
 var curPageName = undefined;
 var wv = undefined;
 var navContext = undefined;
+var wvContext = new _dataObservable.Observable({});
 
 function navigatingTo(args) {
 	_sharedModulesUi2['default'].setViewDefaults();
 	page = args.object;
 	navContext = page.navigationContext;
-	curPageName = navContext.data.title;
-
-	var enabledTabs = '';
-	if (navContext.data.hasType(0) && navContext.data.hasType(1)) {
-		enabledTabs = 'both';
-	} else if (navContext.data.hasType(0)) {
-		enabledTabs = 'drugs';
-	} else if (navContext.data.hasType(1)) {
-		enabledTabs = 'advice';
-	}
-	actionBar = new _sharedViewmodelActionBar2['default'](curPageName, navContext.prevPageTitle, navContext.selectedIndex, enabledTabs);
-	var elActionBar = page.getViewById('actionbar');
-	elActionBar.bindingContext = actionBar;
-
-	// UIView *view1 = [[UIView alloc] init];
-	// var view1 = UIView.alloc().init();
-
-	//NSURL *url=[[NSBundle mainBundle] bundleURL];
-	//[webView loadHTMLString:string baseURL:url];
-
-	//NSUrl url = NSBundle.mainBundle().bundleURL();
-	//webView.loadHTMLStringWithBaseURL(String, url);
-
-	//	var baseUrl = UIView.alloc().init();
+	//curPageName = navContext.data.title;
+	//
+	//
+	//let enabledTabs = '';
+	//if (navContext.data.hasType(0) && navContext.data.hasType(1)) {
+	//	enabledTabs = 'both';
+	//} else if (navContext.data.hasType(0)) {
+	//	enabledTabs = 'drugs';
+	//} else if (navContext.data.hasType(1)) {
+	//	enabledTabs = 'advice';
+	//}
+	//actionBar = new ActionBar(curPageName, navContext.prevPageTitle, navContext.selectedIndex, enabledTabs);
+	//let elActionBar = page.getViewById('actionbar');
+	//elActionBar.bindingContext = actionBar;
 
 	wv = page.getViewById('detailsWV');
-	wv.off(webViewModule.WebView.loadStartedEvent);
-	wv.on(webViewModule.WebView.loadStartedEvent, function (event) {
-		interjectLink(event);
-	});
-
+	wv.bindingContext = wvContext;
+	//wv.off(webViewModule.WebView.loadStartedEvent);
+	//wv.on(webViewModule.WebView.loadStartedEvent, function(event) {
+	//	interjectLink(event);
+	//});
+	//
 	showVW(navContext.data.getContent(navContext.selectedIndex));
 
 	(0, _sharedUtilsDebug.inspect)('Navigating to: ' + navContext.data.id);
@@ -112,7 +106,25 @@ function interjectLink(event) {
 }
 
 function showVW(htmlContent) {
-	wv.src = '<!DOCTYPE html>\n\t\t<html lang="en">\n\t\t<head>\n\t\t\t<meta charset="utf-8">\n\t\t\t<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, user-scalable=0;" />\n\t\t\t<title>REKListan</title>\n\t\t\t<style>\n\t\t\t' + _sharedUtilsHtmlRenderer.templatesModel.getCss('custom') + '\n\t\t\t</style>\n\t\t</head>\n\t\t<body style="background-color: #ffffff;">\n\t\t\t' + htmlContent + '\n\t\t</body>\n\t\t</html>';
+
+	var html = 'hi<br>by';
+
+	//const html = `<!DOCTYPE html>
+	//	<html lang="en">
+	//	<head>
+	//		<meta charset="utf-8">
+	//		<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, user-scalable=0;" />
+	//		<title>REKListan</title>
+	//		<style>
+	//		${templatesModel.getCss('custom')}
+	//		</style>
+	//	</head>
+	//	<body style="background-color: #ffffff;">
+	//		${htmlContent}
+	//	</body>
+	//	</html>`;
+
+	wvContext.set('html', html);
 }
 
 function setTab(index) {
